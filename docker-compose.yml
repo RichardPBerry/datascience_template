@@ -1,0 +1,32 @@
+# Note 1: Bash expansion and variables are not well supported in YAML. 
+# It's far easier to hardcode  NB_USER and NB_PORT here rather than set environment variables etc
+#
+# Note 2: Volume mounting for non-priveleged user relies on the parent directory being created and owned by user in the Dockerfile
+
+version: '3'
+services:
+  app:
+    #env_file:
+    #- ./docker-config.env
+    container_name: jupyter_lab
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NB_USER=jupyter
+        - NB_PORT=8888
+    ports:
+      - "8888-8900:8888-8900"
+    volumes:
+      - ./data:/volume_data/data
+      - ./notebooks:/volume_data/notebooks
+      - ./reference:/volume_data/ref
+      - ./src:/volume_data/src
+      - ./test:/volume_data/test
+      - ./logvolume:/volume_data/logvolume
+
+# To run
+# docker-compose up
+
+# To stop
+# docker-compose down
