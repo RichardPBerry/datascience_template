@@ -3,12 +3,16 @@ FROM debian:latest
 ARG NB_USER=jupyter
 ARG NB_PORT=8888
 
+# Set arguments as environment variables so they are accessible when running commands
+# as a user
+ENV NB_USER=${NB_USER} NB_PORT=${NB_PORT}
+
 #Expose a range of ports to listen on for Jupyter notebook
 EXPOSE 8888-8900
 
 # Update and get useful tools
 RUN apt-get update --fix-missing && \
-    apt-get install -y wget bzip2 ca-certificates curl git && \
+    apt-get install -y wget bzip2 ca-certificates curl git nano && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -28,8 +32,9 @@ WORKDIR /home/${NB_USER}
 
 # Create a permanent storage area for volume mounts
 # Make sure $NB_USER has read/write permissions
-RUN mkdir /volume_data && \
-    chown -R ${NB_USER}:${NB_USER} /volume_data
+RUN mkdir /volume_data
+#RUN mkdir /volume_data && \
+#    chown -R ${NB_USER}:${NB_USER} /volume_data
 
 
 # Perform actions as new user
@@ -52,8 +57,10 @@ RUN . /home/${NB_USER}/conda/etc/profile.d/conda.sh && \
 
 # Swith to root user and start a cron job when the container starts to keep it active
 USER root
+RUN chown -R ${NB_USER}:${NB_USER} /volume_data
+ENTRYPOINT su ${NB_USER} -c "/bin/bash /home/${NB_USER}/init/start-notebook.sh ${NB_PORT}"
+#ENTRYPOINT chown -R ${NB_USER}:${NB_USER} /volume_data; su ${NB_USER} -c "/bin/bash /home/${NB_USER}/init/start-notebook.sh ${NB_PORT}"
 #CMD /bin/bash /home/${NB_USER}/init/cron.sh
-CMD su ${NB_USER} -c "/bin/bash /home/${NB_USER}/init/start-notebook.sh ${NB_PORT}"
 
 
 # To build
