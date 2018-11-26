@@ -58,8 +58,8 @@ RUN . /home/${NB_USER}/conda/etc/profile.d/conda.sh && \
 # Swith to root user and start a cron job when the container starts to keep it active
 USER root
 RUN chown -R ${NB_USER}:${NB_USER} /volume_data
-ENTRYPOINT su ${NB_USER} -c "/bin/bash /home/${NB_USER}/init/start-notebook.sh ${NB_PORT}"
-#ENTRYPOINT chown -R ${NB_USER}:${NB_USER} /volume_data; su ${NB_USER} -c "/bin/bash /home/${NB_USER}/init/start-notebook.sh ${NB_PORT}"
+#ENTRYPOINT su ${NB_USER} -c "/bin/bash /home/${NB_USER}/init/start-notebook.sh ${NB_PORT}"
+ENTRYPOINT chown -R ${NB_USER}:${NB_USER} /volume_data; su ${NB_USER} -c "/bin/bash /home/${NB_USER}/init/start-notebook.sh ${NB_PORT}"
 #CMD /bin/bash /home/${NB_USER}/init/cron.sh
 
 
